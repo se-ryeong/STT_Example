@@ -47,6 +47,7 @@ class ViewController: UIViewController {
         addSubViews()
         buttonLayout()
         textViewLayout()
+        
         speechRecognizer?.delegate = self
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
@@ -73,10 +74,6 @@ class ViewController: UIViewController {
     }
     
     @objc func buttonTapped() {
-        speechToText()
-    }
-    
-    func speechToText() {
         if audioEngine.isRunning { // 현재 음성인식이 수행중이라면
             audioEngine.stop() // 오디오 입력을 중단한다.
             recognitionRequest?.endAudio() // 음성인식도 중단
@@ -86,6 +83,10 @@ class ViewController: UIViewController {
             startRecording()
             button.setTitle("말하기 멈추기", for: .normal)
          }
+    }
+    
+    func speechToText() {
+        
     }
 }
 
@@ -126,7 +127,7 @@ extension ViewController: SFSpeechRecognizerDelegate {
         recognitionRequest.shouldReportPartialResults = true
         
         // 인식을 시작하려면 recognitionTask호출
-        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest, resultHandler: { (result, error) in
+        self.recognitionTask = self.speechRecognizer?.recognitionTask(with: recognitionRequest, resultHandler: { (result, error) in
             
             // 부울을 정의하여 인식이 최종인지 확인
             var isFinal = false
@@ -145,25 +146,25 @@ extension ViewController: SFSpeechRecognizerDelegate {
                 self.recognitionTask = nil
                 self.button.isEnabled = true
             }
-            
-            // recognitionRequest에 오디오 입력 추가, 인식 작업 시작 후에는 오디오 입력 추가 가능, 오디오 프레임워크는 오디오 입력이 추가되는 즉시 인식 시작
-            let recordingFormat = inputNode.outputFormat(forBus: 0)
-            inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
-                
-                // 인식이 되는 즉시 recognitionRequest에 음성 추가
-                self.recognitionRequest?.append(buffer)
-            }
-            
-            self.audioEngine.prepare()
-            
-            do {
-                try self.audioEngine.start()
-            } catch {
-                print("audioEngine couldn't start")
-            }
-            
-            self.textView.text = "말해보세요"
-            
         })
+        
+        // recognitionRequest에 오디오 입력 추가, 인식 작업 시작 후에는 오디오 입력 추가 가능, 오디오 프레임워크는 오디오 입력이 추가되는 즉시 인식 시작
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
+            
+            // 인식이 되는 즉시 recognitionRequest에 음성 추가
+            self.recognitionRequest?.append(buffer)
+        }
+        
+        self.audioEngine.prepare()
+        
+        do {
+            try self.audioEngine.start()
+        } catch {
+            print("audioEngine couldn't start")
+        }
+        
+        self.textView.text = "말해보세요"
+        
     }
 }

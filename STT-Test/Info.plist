@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string></string>
+	<string>말하기 테스트</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string></string>
+	<string>말하기 테스트</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
